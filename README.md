@@ -1,94 +1,107 @@
-# 🧬 DNA Sequence Alignment — Needleman-Wunsch
+<p align="center">
+  <img src="assets/logo.svg" width="88" height="88" alt="SeqAlign" />
+</p>
 
-Visualisasi interaktif algoritma **Needleman-Wunsch** untuk *sequence alignment* DNA. Aplikasi web ini menampilkan langkah-demi-langkah pengisian DP (Dynamic Programming) matrix dan proses traceback secara visual.
-
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
-
-## 📖 Tentang Proyek
-
-Proyek ini merupakan implementasi visual dari algoritma Needleman-Wunsch yang digunakan dalam bioinformatika untuk melakukan *global sequence alignment* pada sekuens DNA. Aplikasi ini dirancang untuk tujuan edukasi agar pengguna dapat memahami cara kerja algoritma secara interaktif.
-
-## ✨ Fitur
-
-- **Visualisasi Langkah-demi-Langkah** — Lihat bagaimana setiap sel pada DP matrix dihitung satu per satu
-- **Traceback Path** — Tampilkan jalur optimal dari pojok kanan bawah ke kiri atas
-- **Preset Sekuens** — Beberapa contoh sekuens DNA siap pakai (Kelompok 4, Simple, Contoh Gap, Panjang)
-- **Konfigurasi Skor** — Atur nilai match, mismatch, dan gap penalty sesuai kebutuhan
-- **Penjelasan Sel** — Setiap langkah disertai penjelasan detail perhitungan (diagonal, atas, kiri, MAX)
-- **Dark/Light Mode** — Tema gelap dan terang dengan transisi halus
-- **Download Matrix (PNG)** — Simpan matriks sebagai gambar PNG
-- **Download Matrix (Excel)** — Ekspor matriks ke format Excel (.xlsx) dengan styling
-- **Responsive Design** — Tampilan optimal di desktop maupun mobile
-- **Validasi Input** — Hanya menerima karakter DNA valid (A, C, G, T, N) dengan maksimal 15 karakter
-
-## 🚀 Cara Menggunakan
-
-1. **Buka** file `index.html` di browser
-2. **Masukkan** sekuens DNA pada kolom Sekuens A dan Sekuens B, atau pilih salah satu **preset**
-3. **Atur** nilai skor Match, Mismatch, dan Gap (opsional)
-4. Klik **"Generate ▶"** untuk membuat matriks
-5. Gunakan tombol kontrol:
-   - **Langkah ▶** — Isi sel satu per satu
-   - **◀ Mundur** — Kembali ke langkah sebelumnya
-   - **Isi Semua ⏩** — Isi seluruh matriks sekaligus
-   - **Traceback 🔍** — Tampilkan jalur alignment optimal
-   - **↺ Reset** — Kosongkan matriks
-
-## 🧪 Contoh Preset
-
-| Preset | Sekuens A | Sekuens B | Match | Mismatch | Gap |
-|--------|-----------|-----------|-------|----------|-----|
-| Kelompok 4 | CTACGCATC | CAAGCCTAC | +2 | +1 | -1 |
-| Simple | ACGT | AGT | +2 | -1 | -2 |
-| Contoh Gap | AGTACG | ACATAG | +2 | +1 | -1 |
-| Panjang | ATCGATCGATCG | ATGCATGCATGC | +1 | -1 | -2 |
-
-## 📂 Struktur Proyek
-
-```
-web-alignment/
-├── index.html          # Halaman utama
-├── assets/
-│   ├── script.js       # Logika algoritma & interaksi UI
-│   └── style.css       # Styling (dark/light theme)
-└── README.md           # Dokumentasi proyek
-```
-
-## 🔬 Tentang Algoritma Needleman-Wunsch
-
-Algoritma Needleman-Wunsch adalah metode *global alignment* yang menggunakan pendekatan **dynamic programming** untuk menemukan alignment optimal antara dua sekuens. Langkah-langkahnya:
-
-1. **Inisialisasi** — Baris pertama dan kolom pertama diisi dengan kelipatan gap penalty
-2. **Pengisian Matrix** — Setiap sel dihitung berdasarkan:
-   - ↖ **Diagonal**: skor sel diagonal + match/mismatch
-   - ↑ **Atas**: skor sel atas + gap penalty
-   - ← **Kiri**: skor sel kiri + gap penalty
-   - ★ **MAX**: nilai maksimum dari ketiganya
-3. **Traceback** — Menelusuri jalur dari sel kanan bawah ke kiri atas untuk mendapatkan alignment optimal
-
-## 🛠️ Teknologi
-
-- **HTML5** — Struktur halaman
-- **CSS3** — Styling dengan CSS Variables, Grid Layout, dan tema responsif
-- **Vanilla JavaScript** — Logika algoritma tanpa framework/library tambahan
-- **html2canvas** — Library untuk screenshot matrix (lazy-loaded)
-
-## 🌐 Browser Support
-
-Aplikasi ini mendukung browser modern:
-- Google Chrome (recommended)
-- Mozilla Firefox
-- Microsoft Edge
-- Safari
-
-## 📄 Lisensi
-
-Proyek ini dibuat untuk keperluan edukasi.
-
----
+<h1 align="center">SeqAlign</h1>
 
 <p align="center">
-  Dibuat dengan ❤️ untuk pembelajaran Bioinformatika
+  Visualisasi interaktif <b>Needleman-Wunsch</b> (global) dan <b>Smith-Waterman</b> (local)<br/>
+  untuk sequence alignment DNA — langkah demi langkah, sel demi sel.
 </p>
+
+<p align="center">
+  <a href="https://zmy16.github.io/seqalign/"><b>Lihat demo →</b></a>
+</p>
+
+<p align="center">
+  <img alt="HTML5" src="https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white" />
+  <img alt="CSS3" src="https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white" />
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black" />
+  <img alt="No build step" src="https://img.shields.io/badge/build-none-14140f" />
+</p>
+
+![Tampilan SeqAlign](assets/preview-top.png)
+
+## Kenapa SeqAlign
+
+Algoritma alignment DNA biasanya diajarkan sebagai rumus. Di sini matriksnya bisa diisi satu sel
+seperti menonton perhitungan ditulis di papan: setiap sel menampilkan tiga kandidat nilai
+(diagonal, atas, kiri) beserta nilai MAX yang dipakai, lengkap dengan penjelasan angkanya.
+
+![Matriks dan traceback](assets/preview-matrix.png)
+
+## Fitur
+
+- **Dua algoritma** — Needleman-Wunsch (global) dan Smith-Waterman (local), bisa berganti tanpa reload.
+- **Langkah demi langkah** — isi matriks sel per sel, atau isi semua sekaligus.
+- **Penjelasan per sel** — breakdown `diagonal + skor`, `atas + gap`, `kiri + gap`, lalu MAX.
+- **Traceback visual** — jalur optimal ditandai garis aksen, hasil alignment ditampilkan berjajar.
+- **Preset sekuens** — Kelompok 4, Simple, Contoh Gap, Panjang.
+- **Skor bisa diatur** — match, mismatch, dan gap penalty.
+- **Ekspor** — matriks ke PNG dan Excel (`.xlsx` asli, ditulis tanpa library eksternal).
+- **Tema terang/gelap** — dua palet penuh, kontras terjaga di keduanya.
+- **Keyboard** — `Enter` langkah, `F` isi semua, `T` traceback, `Ctrl+Z` mundur, `Esc` tutup dialog.
+
+## Cara pakai
+
+1. Buka `index.html` di browser (tidak perlu install apa pun), atau pakai [demo online](https://zmy16.github.io/seqalign/).
+2. Pilih **algoritma**, isi **Sekuens A** dan **Sekuens B** (A/C/G/T/N, maksimal 15 basa), atau pilih preset.
+3. Atur **match / mismatch / gap** bila perlu, lalu klik **Generate**.
+4. Jalankan **Langkah →**, **Isi semua**, lalu **Traceback**.
+
+## Preset
+
+| Preset | Sekuens A | Sekuens B | Match | Mismatch | Gap |
+|---|---|---|---|---|---|
+| Kelompok 4 | `CTACGCATC` | `CAAGCCTAC` | +2 | +1 | −1 |
+| Simple | `ACGT` | `AGT` | +2 | −1 | −2 |
+| Contoh Gap | `AGTACG` | `ACATAG` | +2 | +1 | −1 |
+| Panjang | `ATCGATCGATCG` | `ATGCATGCATGC` | +1 | −1 | −2 |
+
+## Cara kerja singkat
+
+**Needleman-Wunsch (global)**
+
+1. Baris dan kolom pertama diisi kelipatan gap penalty.
+2. Tiap sel: `MAX(diagonal + match/mismatch, atas + gap, kiri + gap)`.
+3. Traceback dari pojok kanan bawah ke kiri atas.
+
+**Smith-Waterman (local)**
+
+1. Baris dan kolom pertama diisi 0.
+2. Tiap sel: `MAX(0, diagonal + match/mismatch, atas + gap, kiri + gap)` — nilai negatif dipangkas ke 0.
+3. Traceback dari sel berskor tertinggi, berhenti saat mencapai 0.
+
+## Struktur proyek
+
+```
+seqalign/
+├── index.html          # Struktur halaman, dialog, dan formulir
+├── assets/
+│   ├── logo.svg        # Mark: mini-matriks DP dengan jalur diagonal
+│   ├── script.js       # Algoritma DP, traceback, render, ekspor
+│   ├── style.css       # Design tokens + seluruh styling
+│   ├── preview-top.png
+│   └── preview-matrix.png
+├── .github/workflows/  # Deploy otomatis ke GitHub Pages
+└── README.md
+```
+
+## Teknologi
+
+- **HTML + CSS + JavaScript vanilla** — tanpa framework, tanpa build step, tanpa `node_modules`.
+- **IBM Plex Sans & Plex Mono** — satu superfamily: teks dan angka.
+- **html2canvas** (lazy-loaded dari CDN, hanya saat ekspor PNG).
+- **Excel writer sendiri** — `.xlsx` dirakit sebagai ZIP (`crc32` + header) berisi XML SpreadsheetML.
+- **Content-Security-Policy** ketat, semua data pengguna di-escape sebelum masuk DOM.
+
+## Desain
+
+Arah visualnya "sequence plate": kertas dan tinta, garis rambut 1px, satu aksen (vermilion) yang
+hanya dipakai untuk menandai **nilai MAX** dan **jalur traceback**. Hierarki dibentuk oleh bobot
+dan ukuran huruf, bukan oleh warna — semua angka memakai `tabular-nums` supaya kolom tidak bergeser
+saat matriks terisi.
+
+## Lisensi
+
+Dibuat untuk keperluan edukasi (Bioinformatika).

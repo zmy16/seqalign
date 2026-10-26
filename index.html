@@ -7,40 +7,52 @@
       name="description"
       content="Visualisasi interaktif algoritma Needleman-Wunsch (global) dan Smith-Waterman (local) untuk sequence alignment DNA. Tampilkan langkah-demi-langkah pengisian DP matrix dan traceback."
     />
-    <meta name="theme-color" content="#0b1120" />
+    <meta name="theme-color" content="#0e0e0c" />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:;"
     />
     <title>DNA Sequence Alignment — Needleman-Wunsch &amp; Smith-Waterman</title>
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230b1120'/><text y='46' x='8' font-size='42'>🧬</text></svg>"
-    />
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
 
     <link rel="stylesheet" href="assets/style.css" />
   </head>
   <body>
-    <div class="page-header">
-      <div class="header-text">
-        <h1>🧬 DNA Sequence Alignment</h1>
-        <p id="headerSub">Algoritma Needleman-Wunsch — Interaktif</p>
+    <header class="page-header">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <g stroke="currentColor" stroke-width="1" stroke-opacity=".45">
+            <path d="M8 0v24M16 0v24M0 8h24M0 16h24" />
+          </g>
+          <g fill="var(--accent)">
+            <rect x="0.5" y="16.5" width="7" height="7" />
+            <rect x="8.5" y="8.5" width="7" height="7" />
+            <rect x="16.5" y="0.5" width="7" height="7" />
+          </g>
+          <rect x="0.5" y="0.5" width="23" height="23" fill="none" stroke="currentColor" />
+        </svg>
+        <div class="brand-text">
+          <h1>DNA Sequence Alignment</h1>
+          <p class="sub" id="headerSub">Needleman-Wunsch · Global alignment</p>
+        </div>
       </div>
       <button
         class="theme-toggle"
         onclick="toggleTheme()"
-        aria-label="Ganti tema terang/gelap"
+        title="Ganti tema terang/gelap"
       >
-        <span id="themeIcon">🌙</span>
+        <span id="themeIcon">Light</span>
       </button>
-    </div>
+    </header>
 
     <div id="toast" role="status" aria-live="polite"></div>
 
@@ -51,178 +63,124 @@
       aria-labelledby="modal-title"
     >
       <div class="modal-box">
-        <h3 id="modal-title">⚠️ Reset Matriks?</h3>
+        <h3 id="modal-title">Reset matriks?</h3>
         <p>Semua progress pengisian sel akan dihapus. Yakin ingin reset?</p>
         <div class="modal-btns">
-          <button
-            class="btn btn-s"
-            onclick="closeModal()"
-            aria-label="Batal reset"
-          >
+          <button class="btn" onclick="closeModal()" aria-label="Batal reset">
             Batal
           </button>
           <button
-            class="btn btn-p"
-            style="background: var(--red)"
+            class="btn btn-p btn-danger"
             onclick="confirmReset()"
             aria-label="Konfirmasi reset"
           >
-            Ya, Reset
+            Ya, reset
           </button>
         </div>
       </div>
     </div>
 
     <main>
-    <div class="bento">
-      <div class="bcard b-input">
-        <div class="bcard-label">Konfigurasi Sekuens & Skor</div>
-        <div class="presets">
-          <span class="preset-label">Preset:</span>
-          <button
-            class="preset-btn"
-            onclick="loadPreset('kelompok4')"
-            aria-label="Load preset Kelompok 4"
-          >
-            Kelompok 4
-          </button>
-          <button
-            class="preset-btn"
-            onclick="loadPreset('simple')"
-            aria-label="Load preset Simple"
-          >
-            Simple
-          </button>
-          <button
-            class="preset-btn"
-            onclick="loadPreset('gap')"
-            aria-label="Load preset Contoh Gap"
-          >
-            Contoh Gap
-          </button>
-          <button
-            class="preset-btn"
-            onclick="loadPreset('long')"
-            aria-label="Load preset Panjang"
-          >
-            Panjang
-          </button>
-        </div>
-        <div class="algo-toggle">
-          <span class="preset-label">Algoritma:</span>
-          <button
-            class="algo-btn active"
-            id="algoNW"
-            onclick="selectAlgo('nw')"
-            aria-label="Pilih Needleman-Wunsch (Global)"
-          >
-            Needleman-Wunsch
-          </button>
-          <button
-            class="algo-btn"
-            id="algoSW"
-            onclick="selectAlgo('sw')"
-            aria-label="Pilih Smith-Waterman (Local)"
-          >
-            Smith-Waterman
-          </button>
-          <span class="algo-desc" id="algoDesc">Global Alignment</span>
-        </div>
-        <div class="input-grid">
-          <div class="ig">
-            <label for="inSeqH">Sekuens A (horizontal)</label>
-            <input
-              id="inSeqH"
-              placeholder="contoh: ATCG"
-              aria-label="Sekuens A"
-              autocomplete="off"
-              spellcheck="false"
-              oninput="validateSeq(this, 'hintH')"
-            />
-            <div class="input-hint" id="hintH" aria-live="polite"></div>
-          </div>
-          <div class="ig">
-            <label for="inSeqV">Sekuens B (vertikal)</label>
-            <input
-              id="inSeqV"
-              placeholder="contoh: AGCG"
-              aria-label="Sekuens B"
-              autocomplete="off"
-              spellcheck="false"
-              oninput="validateSeq(this, 'hintV')"
-            />
-            <div class="input-hint" id="hintV" aria-live="polite"></div>
-          </div>
-        </div>
-        <div class="score-row">
-          <div class="si">
-            <div class="tip-wrap">
-              <label for="inMatch">Match</label>
-              <span class="tip-icon" tabindex="0">?</span>
-              <div class="tip-box">
-                Skor jika kedua basa sama<br />Biasanya bernilai positif (+1 s/d
-                +5)
-              </div>
-            </div>
-            <input
-              id="inMatch"
-              type="number"
-              aria-label="Skor Match"
-              value="2"
-              inputmode="numeric"
-              step="1"
-            />
-          </div>
-          <div class="si">
-            <div class="tip-wrap">
-              <label for="inMis">Mismatch</label>
-              <span class="tip-icon" tabindex="0">?</span>
-              <div class="tip-box">
-                Penalti jika basa berbeda<br />Bisa positif, nol, atau negatif
-              </div>
-            </div>
-            <input
-              id="inMis"
-              type="number"
-              aria-label="Skor Mismatch"
-              value="-1"
-              inputmode="numeric"
-              step="1"
-            />
-          </div>
-          <div class="si">
-            <div class="tip-wrap">
-              <label for="inGap">Gap</label>
-              <span class="tip-icon" tabindex="0">?</span>
-              <div class="tip-box">
-                Penalti untuk insersi/delesi<br />Biasanya bernilai negatif (-1
-                s/d -4)
-              </div>
-            </div>
-            <input id="inGap" type="number" aria-label="Skor Gap" value="-2" inputmode="numeric" step="1" />
-          </div>
-          <button
-            class="btn-gen"
-            onclick="generate()"
-            aria-label="Generate alignment"
-          >
-            Generate ▶
-          </button>
-        </div>
-        <div class="err" id="errMsg" role="alert"></div>
-      </div>
+      <div class="bento">
+        <section class="bcard b-input">
+          <div class="bcard-label">Algoritma &amp; sekuens</div>
 
-      <div id="dyn" style="display: contents"></div>
-    </div>
+          <div class="presets">
+            <span class="preset-label">Preset</span>
+            <button class="preset-btn" onclick="loadPreset('kelompok4')" aria-label="Load preset Kelompok 4">Kelompok 4</button>
+            <button class="preset-btn" onclick="loadPreset('simple')" aria-label="Load preset Simple">Simple</button>
+            <button class="preset-btn" onclick="loadPreset('gap')" aria-label="Load preset Contoh Gap">Contoh gap</button>
+            <button class="preset-btn" onclick="loadPreset('long')" aria-label="Load preset Panjang">Panjang</button>
+          </div>
+
+          <div class="algo-toggle">
+            <span class="preset-label">Algoritma</span>
+            <button
+              class="algo-btn active"
+              id="algoNW"
+              onclick="selectAlgo('nw')"
+              aria-label="Pilih Needleman-Wunsch (Global)"
+            >
+              Needleman-Wunsch
+            </button>
+            <button
+              class="algo-btn"
+              id="algoSW"
+              onclick="selectAlgo('sw')"
+              aria-label="Pilih Smith-Waterman (Local)"
+            >
+              Smith-Waterman
+            </button>
+            <span class="algo-desc" id="algoDesc">Global alignment</span>
+          </div>
+
+          <div class="input-grid">
+            <div class="ig">
+              <label for="inSeqH">Sekuens A — horizontal</label>
+              <input
+                id="inSeqH"
+                placeholder="ATCG"
+                aria-label="Sekuens A"
+                autocomplete="off"
+                spellcheck="false"
+                oninput="validateSeq(this, 'hintH')"
+              />
+              <div class="input-hint" id="hintH" aria-live="polite"></div>
+            </div>
+            <div class="ig">
+              <label for="inSeqV">Sekuens B — vertikal</label>
+              <input
+                id="inSeqV"
+                placeholder="AGCG"
+                aria-label="Sekuens B"
+                autocomplete="off"
+                spellcheck="false"
+                oninput="validateSeq(this, 'hintV')"
+              />
+              <div class="input-hint" id="hintV" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="score-row">
+            <div class="si">
+              <div class="tip-wrap">
+                <label for="inMatch">Match</label>
+                <span class="tip-icon" tabindex="0">?</span>
+                <div class="tip-box">Skor bila kedua basa sama — biasanya positif (+1 s/d +5).</div>
+              </div>
+              <input id="inMatch" type="number" aria-label="Skor Match" value="2" inputmode="numeric" step="1" />
+            </div>
+            <div class="si">
+              <div class="tip-wrap">
+                <label for="inMis">Mismatch</label>
+                <span class="tip-icon" tabindex="0">?</span>
+                <div class="tip-box">Skor bila basa berbeda — bisa positif, nol, atau negatif.</div>
+              </div>
+              <input id="inMis" type="number" aria-label="Skor Mismatch" value="-1" inputmode="numeric" step="1" />
+            </div>
+            <div class="si">
+              <div class="tip-wrap">
+                <label for="inGap">Gap</label>
+                <span class="tip-icon" tabindex="0">?</span>
+                <div class="tip-box">Penalti insersi/delesi — biasanya negatif (−1 s/d −4).</div>
+              </div>
+              <input id="inGap" type="number" aria-label="Skor Gap" value="-2" inputmode="numeric" step="1" />
+            </div>
+            <button class="btn-gen" onclick="generate()" aria-label="Generate alignment">
+              Generate
+            </button>
+          </div>
+
+          <div class="err" id="errMsg" role="alert"></div>
+        </section>
+
+        <div id="dyn" style="display: contents"></div>
+      </div>
     </main>
 
     <noscript>
-      <style>
-        body { background: #0b1120; color: #e4eaf4; padding: 40px; font-family: monospace; text-align: center; }
-        .page-header, .bento, #toast, #modal-overlay { display: none !important; }
-      </style>
-      <h1>JavaScript Required</h1>
-      <p>Aplikasi ini membutuhkan JavaScript untuk berjalan. Aktifkan JavaScript di browser Anda.</p>
+      <h1>JavaScript diperlukan</h1>
+      <p>Aplikasi ini butuh JavaScript untuk menghitung matriks. Aktifkan JavaScript di browser Anda.</p>
     </noscript>
     <script src="assets/script.js" defer></script>
   </body>

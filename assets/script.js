@@ -18,11 +18,11 @@ function applyTheme(theme, animate) {
   const icon = document.getElementById("themeIcon");
   const meta = document.querySelector('meta[name="theme-color"]');
   if (theme === "light") {
-    if (icon) icon.textContent = "☀️";
-    if (meta) meta.setAttribute("content", "#faf7f2");
+    if (icon) icon.textContent = "Dark";
+    if (meta) meta.setAttribute("content", "#fbfaf7");
   } else {
-    if (icon) icon.textContent = "🌙";
-    if (meta) meta.setAttribute("content", "#0b1120");
+    if (icon) icon.textContent = "Light";
+    if (meta) meta.setAttribute("content", "#0e0e0c");
   }
 }
 
@@ -31,8 +31,8 @@ function toggleTheme() {
   applyTheme(current === "dark" ? "light" : "dark", true);
   showToast(
     document.documentElement.getAttribute("data-theme") === "light"
-      ? "☀️ Light mode aktif"
-      : "🌙 Dark mode aktif",
+      ? "Tema terang aktif"
+      : "Tema gelap aktif",
   );
 }
 
@@ -78,7 +78,7 @@ function validateSeq(input, hintId) {
     return;
   }
   input.classList.add("input-ok");
-  hint.textContent = `${clean.length} basa — valid ✓`;
+  hint.textContent = `${clean.length} basa · valid`;
   hint.className = "input-hint ok";
 }
 
@@ -151,8 +151,8 @@ function selectAlgo(algo) {
   $("algoSW").classList.toggle("active", algo === "sw");
   $("algoDesc").textContent = algo === "nw" ? "Global Alignment" : "Local Alignment";
   $("headerSub").textContent = algo === "nw"
-    ? "Algoritma Needleman-Wunsch — Interaktif"
-    : "Algoritma Smith-Waterman — Interaktif";
+    ? "Needleman-Wunsch · Global alignment"
+    : "Smith-Waterman · Local alignment";
   document.title = algo === "nw"
     ? "DNA Sequence Alignment — Needleman-Wunsch"
     : "DNA Sequence Alignment — Smith-Waterman";
@@ -275,16 +275,15 @@ function buildMatrix() {
 
 function renderUI() {
   $("dyn").innerHTML = `
-    <!-- SEQ BOX -->
     <div class="bcard b-seqbox">
       <div class="bcard-label">Sekuens</div>
       <div class="seq-display">
         <div class="seq-box">
-          <div class="seq-lbl">Sekuens A (horizontal)</div>
+          <div class="seq-lbl">Sekuens A — horizontal</div>
           <div class="seq-letters">${seqH.map((c) => `<span class="nt-${c.toLowerCase()}">${escapeHTML(c)}</span>`).join("")}</div>
         </div>
         <div class="seq-box">
-          <div class="seq-lbl">Sekuens B (vertikal)</div>
+          <div class="seq-lbl">Sekuens B — vertikal</div>
           <div class="seq-letters">${seqV.map((c) => `<span class="nt-${c.toLowerCase()}">${escapeHTML(c)}</span>`).join("")}</div>
         </div>
       </div>
@@ -292,12 +291,12 @@ function renderUI() {
 
     <!-- PARAMS -->
     <div class="bcard b-params">
-      <div class="bcard-label">Parameter Skor</div>
+      <div class="bcard-label">Parameter skor</div>
       <div class="params">
         <div class="pc"><div class="lbl">Match</div><div class="val match-c">${sign(MATCH)}</div></div>
         <div class="pc"><div class="lbl">Mismatch</div><div class="val mis-c">${sign(MIS)}</div></div>
         <div class="pc"><div class="lbl">Gap</div><div class="val gap-c">${sign(GAP)}</div></div>
-        <div class="pc"><div class="lbl">Final Score</div><div class="val score-c" id="fs">—</div></div>
+        <div class="pc"><div class="lbl">Skor final</div><div class="val score-c" id="fs">—</div></div>
       </div>
     </div>
 
@@ -306,33 +305,30 @@ function renderUI() {
       <div class="bcard-label">Kontrol</div>
       <div class="inner-ctrl">
         <div class="ctrl-btns">
-          <button class="btn btn-s"    id="btnReset" onclick="doReset()" aria-label="Reset matriks">↺ Reset</button>
-          <button class="btn btn-prev" id="btnPrev"  onclick="doPrev()"  aria-label="Langkah mundur" disabled>◀ Mundur</button>
-          <button class="btn btn-p"    id="btnStep"  onclick="doStep()"  aria-label="Langkah berikutnya">Langkah ▶</button>
-          <button class="btn btn-p"    id="btnFill"  onclick="doFillBtn()"  aria-label="Isi semua sel">Isi Semua ⏩</button>
-          <button class="btn btn-g"    id="btnTrace" onclick="doTrace()" aria-label="Jalankan traceback">Traceback 🔍</button>
+          <button class="btn"          id="btnReset" onclick="doReset()" aria-label="Reset matriks">↺ Reset</button>
+          <button class="btn btn-prev"  id="btnPrev"  onclick="doPrev()"  aria-label="Langkah mundur" disabled>← Mundur</button>
+          <button class="btn btn-p"     id="btnStep"  onclick="doStep()"  aria-label="Langkah berikutnya">Langkah →</button>
+          <button class="btn btn-p"     id="btnFill"  onclick="doFillBtn()" aria-label="Isi semua sel">Isi semua</button>
+          <button class="btn btn-g"     id="btnTrace" onclick="doTrace()" aria-label="Jalankan traceback">Traceback</button>
         </div>
-        <div class="step-info" id="si" aria-live="polite">Klik "Langkah ▶" untuk mulai</div>
+        <div class="step-info" id="si" aria-live="polite">Klik "Langkah" untuk mulai</div>
       </div>
       <div class="progress-wrap"><div class="progress-bar" id="prog"></div></div>
-      <div class="legend" style="margin-top:14px;">
-        <div class="li"><div class="ld" style="background:var(--green)"></div>↖ Diagonal</div>
-        <div class="li"><div class="ld" style="background:var(--red)"></div>↑ Atas (gap)</div>
-        <div class="li"><div class="ld" style="background:var(--yellow)"></div>← Kiri (gap)</div>
-        <div class="li"><div class="ld" style="background:var(--blue)"></div>★ MAX</div>
+      <div class="legend">
+        <div class="li"><span class="lg-k">↖</span>Diagonal</div>
+        <div class="li"><span class="lg-k">↑</span>Atas (gap)</div>
+        <div class="li"><span class="lg-k">←</span>Kiri (gap)</div>
+        <div class="li"><span class="lg-k lg-max">★</span>MAX</div>
       </div>
-      <div class="legend nt-legend" style="margin-top:8px;">
-        <div class="li"><div class="ld" style="background:var(--nt-a)"></div>A</div>
-        <div class="li"><div class="ld" style="background:var(--nt-t)"></div>T</div>
-        <div class="li"><div class="ld" style="background:var(--nt-g)"></div>G</div>
-        <div class="li"><div class="ld" style="background:var(--nt-c)"></div>C</div>
-        <span class="shortcut-hint">Enter=step · F=fill · T=trace · Ctrl+Z=undo</span>
+      <div class="legend nt-legend">
+        <span class="nt-a">A</span><span class="nt-t">T</span><span class="nt-g">G</span><span class="nt-c">C</span>
+        <span class="shortcut-hint">Enter step · F isi · T traceback · Ctrl+Z undo</span>
       </div>
     </div>
 
     <!-- MATRIX -->
     <div class="bcard b-matrix">
-      <div class="bcard-label">DP Matrix</div>
+      <div class="bcard-label">Matriks DP</div>
       <div class="matrix-scroll-wrap" id="mScrollWrap">
         <div class="matrix-wrapper" id="mWrapper">
           <div id="matrix-capture">
@@ -342,21 +338,21 @@ function renderUI() {
         </div>
       </div>
       <div class="dl-row">
-<button class="btn btn-img" onclick="dlMatrixImg()" aria-label="Download Matrix (PNG)">📷 Download Matrix (PNG)</button>
-<button class="btn btn-xls" onclick="dlMatrixExcel()" aria-label="Download Matrix (Excel)">📊 Download Matrix (Excel)</button>
+        <button class="btn btn-img" onclick="dlMatrixImg()" aria-label="Download Matrix (PNG)">PNG</button>
+        <button class="btn btn-xls" onclick="dlMatrixExcel()" aria-label="Download Matrix (Excel)">XLSX</button>
       </div>
     </div>
 
     <!-- EXPLAIN -->
     <div class="bcard b-explain" id="ep">
-      <div class="bcard-label">Penjelasan Sel</div>
-      <h2>Cara Membaca Setiap Sel</h2>
-      <p style="font-size:0.8rem;color:var(--sub);line-height:1.6">Setiap sel berisi 4 nilai: <span style="color:var(--green)">↖ Diagonal</span> | <span style="color:var(--red)">↑ Atas</span> | <span style="color:var(--yellow)">← Kiri</span> | <span style="color:var(--blue)">★ MAX</span></p>
+      <div class="bcard-label">Penjelasan sel</div>
+      <h2>Cara membaca setiap sel</h2>
+      <p>Setiap sel memuat empat nilai: diagonal (↖), atas (↑), kiri (←), dan MAX (★). Nilai MAX yang dipakai mengisi matriks.</p>
       <div class="calc">
-        <div>↖ = sel diagonal + match/mismatch</div>
-        <div>↑ = sel atas + gap (${GAP})</div>
-        <div>← = sel kiri + gap (${GAP})</div>
-        <div>★ = ${ALGO === "sw" ? "MAX(0, ketiganya) — clamp ke 0" : "MAX dari ketiganya"}</div>
+        <div class="calc-row"><span class="calc-key">↖ Diagonal</span><span class="calc-val">sel diagonal + skor match/mismatch</span></div>
+        <div class="calc-row"><span class="calc-key">↑ Atas</span><span class="calc-val">sel atas + gap (${GAP})</span></div>
+        <div class="calc-row"><span class="calc-key">← Kiri</span><span class="calc-val">sel kiri + gap (${GAP})</span></div>
+        <div class="calc-row is-max"><span class="calc-key">★ MAX</span><span class="calc-val">${ALGO === "sw" ? "MAX(0, ketiganya) — clamp ke 0" : "MAX dari ketiganya"}</span></div>
       </div>
     </div>
 
@@ -369,6 +365,9 @@ function buildTable() {
   const frag = document.createDocumentFragment();
   const tbl = $("mt");
   tbl.innerHTML = "";
+  // Sekuens pendek: tabel cukup selebar isinya (di-center).
+  // Kolom >= 4 basa: tabel melebar mengisi kartu agar tidak ada ruang kosong.
+  tbl.classList.toggle("fill", cols >= 5);
   const hr = document.createElement("tr");
   hr.innerHTML = `<th class="corner"></th><th>-</th>${seqH.map((c) => `<th class="nt-${c.toLowerCase()}">${escapeHTML(c)}</th>`).join("")}`;
   frag.appendChild(hr);
@@ -406,34 +405,27 @@ function buildTable() {
 
 function epDefault() {
   $("ep").innerHTML = `
-    <div class="bcard-label">Penjelasan Sel</div>
-    <h2>Cara Membaca Setiap Sel</h2>
-    <p style="font-size:0.85rem;color:var(--sub);line-height:1.6">Setiap sel berisi 4 nilai:
-      <span style="color:var(--green)">↖ Diagonal</span> |
-      <span style="color:var(--red)">↑ Atas</span> |
-      <span style="color:var(--yellow)">← Kiri</span> |
-      <span style="color:var(--blue)">★ MAX</span></p>
+    <div class="bcard-label">Penjelasan sel</div>
+    <h2>Cara membaca setiap sel</h2>
+    <p>Setiap sel memuat empat nilai: diagonal (↖), atas (↑), kiri (←), dan MAX (★). Nilai MAX yang dipakai mengisi matriks.</p>
     <div class="calc">
-      <div>↖ = sel diagonal + match/mismatch</div>
-      <div>↑  = sel atas + gap (${GAP})</div>
-      <div>← = sel kiri + gap (${GAP})</div>
-      <div>★ = ${ALGO === "sw" ? "MAX(0, ketiganya) — clamp ke 0" : "MAX dari ketiganya"}</div>
+      <div class="calc-row"><span class="calc-key">↖ Diagonal</span><span class="calc-val">sel diagonal + skor match/mismatch</span></div>
+      <div class="calc-row"><span class="calc-key">↑ Atas</span><span class="calc-val">sel atas + gap (${GAP})</span></div>
+      <div class="calc-row"><span class="calc-key">← Kiri</span><span class="calc-val">sel kiri + gap (${GAP})</span></div>
+      <div class="calc-row is-max"><span class="calc-key">★ MAX</span><span class="calc-val">${ALGO === "sw" ? "MAX(0, ketiganya) — clamp ke 0" : "MAX dari ketiganya"}</span></div>
     </div>`;
 }
 function epStep(s) {
-  const isMatch = s.s === MATCH,
-    mc = isMatch ? "var(--green)" : "var(--yellow)";
+  const isMatch = s.s === MATCH;
   $("ep").innerHTML = `
-    <div class="bcard-label">Penjelasan Sel</div>
-    <h2>Sel (${escapeHTML(s.cv)}, ${escapeHTML(s.ch)}) — Baris ${s.i}, Kolom ${s.j}</h2>
-    <p style="font-size:0.85rem;margin-bottom:6px"><span style="color:${mc}">${escapeHTML(s.cv)} vs ${escapeHTML(s.ch)} = ${isMatch ? "Match ✓" : "Mismatch ✗"} (${sign(s.s)})</span></p>
+    <div class="bcard-label">Penjelasan sel</div>
+    <h2>Sel (${escapeHTML(s.cv)}, ${escapeHTML(s.ch)}) — baris ${s.i}, kolom ${s.j}</h2>
+    <p>${escapeHTML(s.cv)} vs ${escapeHTML(s.ch)} — ${isMatch ? "match" : "mismatch"} (${sign(s.s)})</p>
     <div class="calc">
-      <div><span style="color:var(--green)">↖ Diagonal:</span> ${matrix[s.i - 1][s.j - 1].m} + (${sign(s.s)}) = <b>${s.d}</b></div>
-      <div><span style="color:var(--red)">↑ Atas &nbsp;&nbsp;:</span> ${matrix[s.i - 1][s.j].m} + (${GAP}) = <b>${s.t}</b></div>
-      <div><span style="color:var(--yellow)">← Kiri &nbsp;&nbsp;:</span> ${matrix[s.i][s.j - 1].m} + (${GAP}) = <b>${s.l}</b></div>
-      <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
-        <span style="color:var(--blue)">★ MAX(${s.d}, ${s.t}, ${s.l}) = <b>${s.mx}</b></span>
-      </div>
+      <div class="calc-row"><span class="calc-key">↖ Diagonal</span><span class="calc-val">${matrix[s.i - 1][s.j - 1].m} + (${sign(s.s)}) = <b>${s.d}</b></span></div>
+      <div class="calc-row"><span class="calc-key">↑ Atas</span><span class="calc-val">${matrix[s.i - 1][s.j].m} + (${GAP}) = <b>${s.t}</b></span></div>
+      <div class="calc-row"><span class="calc-key">← Kiri</span><span class="calc-val">${matrix[s.i][s.j - 1].m} + (${GAP}) = <b>${s.l}</b></span></div>
+      <div class="calc-row is-max"><span class="calc-key">★ MAX</span><span class="calc-val">MAX(${s.d}, ${s.t}, ${s.l}) = <b>${s.mx}</b></span></div>
     </div>`;
 }
 
@@ -488,7 +480,7 @@ function setProgress(n, total) {
   const pct = total > 0 ? Math.round((n / total) * 100) : 0;
   $("prog").style.width = pct + "%";
   $("si").textContent =
-    n === 0 ? 'Klik "Langkah ▶" untuk mulai' : `Langkah ${n} dari ${total} sel`;
+    n === 0 ? 'Klik "Langkah" untuk mulai' : `Langkah ${n} dari ${total} sel`;
 }
 
 function getFinalScore() {
@@ -522,7 +514,7 @@ function doStep() {
   if (cur === steps.length) {
     $("fs").textContent = getFinalScore();
     showToast(
-      "✅ Semua sel terisi! Klik Traceback untuk melihat jalur optimal.",
+      "Semua sel terisi — jalankan traceback untuk melihat jalur optimal.",
     );
   }
   updateNavBtns();
@@ -530,7 +522,7 @@ function doStep() {
 
 function doPrev() {
   if (cur <= 0) {
-    showToast("ℹ️ Sudah di langkah pertama");
+    showToast("Sudah di langkah pertama.");
     return;
   }
   cur--;
@@ -566,12 +558,12 @@ let _fillRAF = null;
 function doFill(silent) {
   if (typeof silent !== "boolean") silent = false;
   if (cur >= steps.length) {
-    if (!silent) showToast("Matriks sudah penuh. Klik Traceback 🔍");
+    if (!silent) showToast("Matriks sudah penuh — jalankan traceback.");
     return;
   }
   const btn = $("btnFill");
   btn.classList.add("loading");
-  btn.textContent = "Mengisi...";
+  btn.textContent = "Mengisi…";
 
   if (_fillRAF) cancelAnimationFrame(_fillRAF);
   _fillRAF = requestAnimationFrame(() => {
@@ -587,11 +579,11 @@ function doFill(silent) {
       setProgress(cur, steps.length);
       $("fs").textContent = getFinalScore();
       btn.classList.remove("loading");
-      btn.textContent = "Isi Semua ⏩";
+      btn.textContent = "Isi semua";
       updateNavBtns();
       if (!silent)
         showToast(
-          "✅ Semua sel terisi! Klik Traceback untuk melihat jalur optimal.",
+          "Semua sel terisi — jalankan traceback untuk melihat jalur optimal.",
         );
       _fillRAF = null;
     });
@@ -600,7 +592,7 @@ function doFill(silent) {
 
 function doReset() {
   if (cur === 0) {
-    showToast("ℹ️ Matriks sudah kosong");
+    showToast("Matriks sudah kosong.");
     return;
   }
   openModal();
@@ -623,7 +615,7 @@ function _doReset() {
   }
   for (const s of steps) clearCell(s);
   epDefault();
-  showToast("↺ Matriks direset");
+  showToast("Matriks direset.");
   updateNavBtns();
 }
 
@@ -633,7 +625,7 @@ function doTrace() {
   if (cur < steps.length) {
     const btn = $("btnFill");
     btn.classList.add("loading");
-    btn.textContent = "Mengisi...";
+    btn.textContent = "Mengisi…";
     if (_traceRAF) cancelAnimationFrame(_traceRAF);
     _traceRAF = requestAnimationFrame(() =>
       requestAnimationFrame(() => {
@@ -643,7 +635,7 @@ function doTrace() {
           cur++;
         }
         btn.classList.remove("loading");
-        btn.textContent = "Isi Semua ⏩";
+        btn.textContent = "Isi semua";
         $("fs").textContent = getFinalScore();
         setProgress(cur, steps.length);
         updateNavBtns();
@@ -735,7 +727,7 @@ function _runTrace() {
   const identity = mk.length > 0 ? ((mCnt / mk.length) * 100).toFixed(1) : "0.0";
 
   if (ALGO === "sw" && score === 0) {
-    showToast("ℹ️ Smith-Waterman: Tidak ada alignment lokal dengan skor > 0. Coba ubah parameter scoring.");
+    showToast("Smith-Waterman: tidak ada alignment lokal dengan skor > 0. Coba ubah parameter skor.");
   }
 
   const ntCls = (c) => {
@@ -777,12 +769,12 @@ function _runTrace() {
 
   const rp = $("rp");
   rp.classList.add("visible");
-  rp.innerHTML = `<div class="bcard-label">Hasil Alignment</div><h2>Hasil Alignment Optimal</h2>
-    <div style="display:flex;justify-content:center">
+  rp.innerHTML = `<div class="bcard-label">Hasil alignment</div><h2>Alignment optimal</h2>
+    <div class="alignment">
       <div class="align-block">
-        <div class="align-row"><span class="align-lbl">A:</span><div class="align-chars">${charsA}</div></div>
+        <div class="align-row"><span class="align-lbl">A</span><div class="align-chars">${charsA}</div></div>
         <div class="align-row"><span class="align-lbl"></span><div class="align-chars">${charsMid}</div></div>
-        <div class="align-row"><span class="align-lbl">B:</span><div class="align-chars">${charsB}</div></div>
+        <div class="align-row"><span class="align-lbl">B</span><div class="align-chars">${charsB}</div></div>
       </div>
     </div>
     <div class="stats-row">
@@ -793,14 +785,14 @@ function _runTrace() {
       <div class="stat-chip ident-c">${identity}% identitas</div>
     </div>
     <div class="dl-row">
-      <button class="btn btn-img" onclick="dlResultImg()">📷 Download PNG</button>
-      <button class="btn btn-copy" onclick="copyAlignment()">📋 Copy Teks</button>
+      <button class="btn btn-img" onclick="dlResultImg()" aria-label="Download hasil sebagai PNG">PNG</button>
+      <button class="btn btn-copy" onclick="copyAlignment()" aria-label="Copy alignment sebagai teks">Copy teks</button>
     </div>`;
   $("ep").innerHTML =
     ALGO === "sw"
-? `<div class="bcard-label">Penjelasan Sel</div><h2>Traceback Path (Local)</h2><p style="font-size:0.8rem;color:var(--sub);line-height:1.6">Jalur <span class="text-green" style="font-weight:700">hijau</span> = traceback dari skor maksimum → berhenti saat skor = 0.<br>Diagonal = match/mismatch &nbsp;|&nbsp; Atas = gap di A &nbsp;|&nbsp; Kiri = gap di B</p>`
-  : `<div class="bcard-label">Penjelasan Sel</div><h2>Traceback Path (Global)</h2><p style="font-size:0.8rem;color:var(--sub);line-height:1.6">Jalur <span class="text-green" style="font-weight:700">hijau</span> = traceback dari pojok kanan bawah → kiri atas.<br>Diagonal = match/mismatch &nbsp;|&nbsp; Atas = gap di A &nbsp;|&nbsp; Kiri = gap di B</p>`;
-  showToast("🔍 Traceback selesai! Lihat hasil alignment di bawah.");
+? `<div class="bcard-label">Penjelasan sel</div><h2>Jalur traceback — local</h2><p>Jalur aksen pada matriks = traceback dari skor maksimum, berhenti saat skor mencapai 0. Diagonal = match/mismatch · Atas = gap di A · Kiri = gap di B.</p>`
+  : `<div class="bcard-label">Penjelasan sel</div><h2>Jalur traceback — global</h2><p>Jalur aksen pada matriks = traceback dari pojok kanan bawah ke kiri atas. Diagonal = match/mismatch · Atas = gap di A · Kiri = gap di B.</p>`;
+  showToast("Traceback selesai — hasil alignment ada di bawah.");
 }
 
 function copyAlignment() {
@@ -816,8 +808,8 @@ function copyAlignment() {
   ];
   const text = lines.join("\n");
   navigator.clipboard.writeText(text).then(
-    () => showToast("📋 Alignment berhasil disalin!"),
-    () => showToast("⚠️ Gagal menyalin — coba manual."),
+    () => showToast("Alignment disalin ke clipboard."),
+    () => showToast("Gagal menyalin — salin manual."),
   );
 }
 
@@ -912,7 +904,7 @@ async function dlMatrixImg() {
       "dp_matrix.png",
     );
   } catch (e) {
-    showToast("⚠️ Gagal memuat library screenshot. Coba lagi.");
+    showToast("Gagal memuat library screenshot. Coba lagi.");
   } finally {
     if (btn) btn.classList.remove("loading");
   }
@@ -941,7 +933,7 @@ async function dlResultImg() {
       "alignment_result.png",
     );
   } catch (e) {
-    showToast("⚠️ Gagal memuat library screenshot. Coba lagi.");
+    showToast("Gagal memuat library screenshot. Coba lagi.");
   } finally {
     if (btn) btn.classList.remove("loading");
   }
